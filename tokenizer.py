@@ -121,11 +121,15 @@ keywords = {
     'false', 'nil', 'this','super'
 }
 
+def addError(list,lineno):
+    list.append("invalid syntax in line: "+str(lineno))
 
 def tokenize(text: str) -> Token:
     lineno, n = 1, 0
+    oneError=False
+    errorList=[]
 
-    while n < len(text):
+    while n < len(text) and not oneError:
 
         # newline
         if text[n] == '\n':
@@ -170,12 +174,15 @@ def tokenize(text: str) -> Token:
         # Numeros enteros y de punto flotante
         if text[n].isdigit():
             start = n
-            Lzero_filter=""
-            if text[n]=='0':
-                Lzero_filter='0'
+            contLeftZeros=0
 
-            while n < len(text) and text[n].isdigit():
+            while n < len(text) and text[n].isdigit() and not oneError:
                 n += 1
+                if text[n]=='0' and contLeftZeros==0:
+                    contLeftZeros=1
+                if text[n]=='0' and contLeftZeros!=0:
+                    addError(errorList,lineno)
+                    oneError=True
             if n < len(text) and text[n] == '.':
                 n += 1
                 while n < len(text) and text[n].isdigit():
@@ -186,6 +193,8 @@ def tokenize(text: str) -> Token:
             continue
 
         n += 1
+    print("\n\nErrors:")
+    print(errorList)
 
 if __name__ == '__main__':
     import sys
