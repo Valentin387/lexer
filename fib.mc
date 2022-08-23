@@ -1,16 +1,20 @@
-/* *******************************************************
-*   fib.mc
-*
-*   calcula el n-esimo numero de la secuencia de Fibonacci
-*
-* ******************************************************* */
-
-fun fib(n){
-    if (n<=1) return 1;
-    return  fib(n-1) + fib(n-2);
-}
-
-//main
-for(var i = 1; i < 2056890; i = i + 1){
-    print fib(i*1.33);
-}
+12
+0.2
+0
+7
+8
+3.1415
+.234
+13.
+.
+"soyString"
+"soy string"
+function_name
+fun
+_primo_to_bitcoin
+classes
+class
+%
+¿
+a
+'a'

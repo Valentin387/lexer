@@ -121,11 +121,15 @@ keywords = {
     'false', 'nil', 'this','super'
 }
 
+def addError(list,lineno):
+    list.append("invalid syntax in line: "+str(lineno))
 
 def tokenize(text: str) -> Token:
     lineno, n = 1, 0
+    oneError=False
+    errorList=[]
 
-    while n < len(text):
+    while n < len(text) and not oneError:
 
         # newline
         if text[n] == '\n':
@@ -162,20 +166,54 @@ def tokenize(text: str) -> Token:
             continue
 
         # Tokens de longitud 1
-        if text[n] in literal_tokens:
+        if text[n] in literal_tokens and not(text[n+1].isdigit()):
             yield Token(literal_tokens[text[n]], text[n], lineno, n)
             n += 1
+            continue
+
+        #keywords and idents
+        if text[n].isalpha() or text[n]=='_':
+            start = n
+            identFlag=False
+            n+=1
+            if text[n]=='_':
+                while n < len(text) and (text[n].isalnum() or text[n]=='_') and text[n]!='\n':
+                    n+=1
+                yield Token('IDENT', text[start:n], lineno, start)
+            else:
+                while n < len(text) and (text[n].isalnum() or text[n]=='_') and text[n]!='\n':
+                    n+=1
+                    if text[n]=='_' or text[n].isdigit():
+                        identFlag=True
+                if not identFlag and text[start:n] in keywords:
+                    yield Token('KEYWORD', text[start:n], lineno, start)
+                else:
+                    yield Token('IDENT', text[start:n], lineno, start)
+            continue
+
+        #Strings
+        if text[n]=='"':
+            start = n
+            n+=1
+
+            while n < len(text) and text[n]!='"' and text[n]!='\n':
+                n+=1
+            yield Token('STRING', text[start:n+1], lineno, start)
+            n+=1
             continue
 
         # Numeros enteros y de punto flotante
         if text[n].isdigit():
             start = n
-            Lzero_filter=""
-            if text[n]=='0':
-                Lzero_filter='0'
+            contLeftZeros=0
 
             while n < len(text) and text[n].isdigit():
                 n += 1
+                if text[n]=='0' and contLeftZeros==0:
+                    contLeftZeros=1
+                if text[n]=='0' and contLeftZeros!=0:
+                    addError(errorList,lineno)
+                    oneError=True
             if n < len(text) and text[n] == '.':
                 n += 1
                 while n < len(text) and text[n].isdigit():
@@ -185,7 +223,18 @@ def tokenize(text: str) -> Token:
                 yield Token('INTEGER', text[start:n], lineno, start)
             continue
 
+        #Float .234 type
+        if text[n]=='.' and text[n+1].isdigit():
+            start = n
+            n += 1
+            while n < len(text) and text[n].isdigit():
+                n += 1
+            yield Token('FLOAT', text[start:n], lineno, start)
+        continue
+
         n += 1
+    print("\n\nErrors:")
+    print(errorList)
 
 if __name__ == '__main__':
     import sys
