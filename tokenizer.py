@@ -166,17 +166,20 @@ def tokenize(text: str) -> Token:
             continue
 
         # Tokens de longitud 1
-        if text[n] in literal_tokens:
+        if text[n] in literal_tokens and not(text[n+1].isdigit()):
             yield Token(literal_tokens[text[n]], text[n], lineno, n)
             n += 1
             continue
+
+        #keywords
+        
 
         # Numeros enteros y de punto flotante
         if text[n].isdigit():
             start = n
             contLeftZeros=0
 
-            while n < len(text) and text[n].isdigit() and not oneError:
+            while n < len(text) and text[n].isdigit() :
                 n += 1
                 if text[n]=='0' and contLeftZeros==0:
                     contLeftZeros=1
@@ -191,6 +194,15 @@ def tokenize(text: str) -> Token:
             else:
                 yield Token('INTEGER', text[start:n], lineno, start)
             continue
+
+        #Float .234 type
+        if text[n]=='.' and text[n+1].isdigit():
+            start = n
+            n += 1
+            while n < len(text) and text[n].isdigit():
+                n += 1
+            yield Token('FLOAT', text[start:n], lineno, start)
+        continue
 
         n += 1
     print("\n\nErrors:")
