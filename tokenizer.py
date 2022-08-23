@@ -172,14 +172,30 @@ def tokenize(text: str) -> Token:
             continue
 
         #keywords
-        
+        if text[n].isalpha():
+            start = n
+
+            while n < len(text) and text[n].isalpha():
+                n+=1
+            if text[start:n] in keywords:
+                yield Token('KEYWORD', text[start:n], lineno, start)
+            continue
+
+        #Strings
+        if text[n]=='"' and not text[n].isspace():
+            start = n
+
+            while n < len(text) and (text[n].isalnum() or text[n].isspace()) and not text[n]=='"':
+                n+=1
+            yield Token('STRING', text[start:n], lineno, start)
+            continue
 
         # Numeros enteros y de punto flotante
         if text[n].isdigit():
             start = n
             contLeftZeros=0
 
-            while n < len(text) and text[n].isdigit() :
+            while n < len(text) and text[n].isdigit():
                 n += 1
                 if text[n]=='0' and contLeftZeros==0:
                     contLeftZeros=1

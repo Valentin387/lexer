@@ -7,3 +7,7 @@
 .234
 13.
 .
+var
+variable
+"soyString"
+"soy string"
