@@ -7,9 +7,14 @@
 .234
 13.
 .
-var
-variable
 "soyString"
 "soy string"
-.34
-variable
+function_name
+fun
+_primo_to_bitcoin
+classes
+class
+%
+¿
+a
+'a'

@@ -171,14 +171,24 @@ def tokenize(text: str) -> Token:
             n += 1
             continue
 
-        #keywords
-        if text[n].isalpha():
+        #keywords and idents
+        if text[n].isalpha() or text[n]=='_':
             start = n
-
-            while n < len(text) and text[n].isalpha():
-                n+=1
-            if text[start:n] in keywords:
-                yield Token('KEYWORD', text[start:n], lineno, start)
+            identFlag=False
+            n+=1
+            if text[n]=='_':
+                while n < len(text) and (text[n].isalnum() or text[n]=='_') and text[n]!='\n':
+                    n+=1
+                yield Token('IDENT', text[start:n], lineno, start)
+            else:
+                while n < len(text) and (text[n].isalnum() or text[n]=='_') and text[n]!='\n':
+                    n+=1
+                    if text[n]=='_' or text[n].isdigit():
+                        identFlag=True
+                if not identFlag and text[start:n] in keywords:
+                    yield Token('KEYWORD', text[start:n], lineno, start)
+                else:
+                    yield Token('IDENT', text[start:n], lineno, start)
             continue
 
         #Strings
