@@ -182,12 +182,14 @@ def tokenize(text: str) -> Token:
             continue
 
         #Strings
-        if text[n]=='"' and not text[n].isspace():
+        if text[n]=='"':
             start = n
+            n+=1
 
-            while n < len(text) and (text[n].isalnum() or text[n].isspace()) and not text[n]=='"':
+            while n < len(text) and text[n]!='"' and text[n]!='\n':
                 n+=1
-            yield Token('STRING', text[start:n], lineno, start)
+            yield Token('STRING', text[start:n+1], lineno, start)
+            n+=1
             continue
 
         # Numeros enteros y de punto flotante

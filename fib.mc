@@ -11,3 +11,5 @@ var
 variable
 "soyString"
 "soy string"
+.34
+variable
