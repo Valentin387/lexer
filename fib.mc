@@ -1,6 +1,6 @@
 12
 0.2
-000
+0000
 7
 8
 3.1415
@@ -15,9 +15,12 @@ _primo_to_bitcoin
 classes
 class
 variable
+99
 var
 %
 vector[6]
 "hola
 mundo"
 2
+33
+55.8
