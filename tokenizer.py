@@ -195,10 +195,40 @@ def tokenize(text: str) -> Token:
             start = n
             n+=1
 
-            while n < len(text) and text[n]!='"' and text[n]!='\n':
+            while n+1 < len(text) and text[n]!='"' and text[n+1]!='\n':
                 n+=1
-            yield Token('STRING', text[start:n+1], lineno, start)
+            if text[n]=='"':
+                yield Token('STRING', text[start:n+1], lineno, start)
+            else:
+                addError(errorList,lineno,text[start:n+1])
             n+=1
+            continue
+
+        # Numeros enteros y de punto flotante
+        if text[n].isdigit() or text[n]=='.':
+            start = n
+            contLeftZeros=0
+
+            if text[n]=='.':
+                n += 1
+                while n < len(text) and text[n].isdigit():
+                    n += 1
+                yield Token('FLOAT', text[start:n], lineno, start)
+            else:
+                while n < len(text) and text[n].isdigit():
+                    n += 1
+                    if text[n]=='0' and contLeftZeros==0:
+                        contLeftZeros=1
+                        n += 1
+                    if text[n]=='0' and contLeftZeros!=0:
+                        addError(errorList,lineno,text[n])
+                if n < len(text) and text[n] == '.':
+                    n += 1
+                    while n < len(text) and text[n].isdigit():
+                        n += 1
+                    yield Token('FLOAT', text[start:n], lineno, start)
+                else:
+                    yield Token('INTEGER', text[start:n], lineno, start)
             continue
 
         #errors
@@ -206,39 +236,6 @@ def tokenize(text: str) -> Token:
             addError(errorList,lineno,text[n])
             n += 1
 
-        # Numeros enteros y de punto flotante
-        if text[n].isdigit():
-            start = n
-            contLeftZeros=0
-
-            while n < len(text) and text[n].isdigit():
-                n += 1
-                if text[n]=='0' and contLeftZeros==0:
-                    contLeftZeros=1
-                    n += 1
-                if text[n]=='0' and contLeftZeros!=0:
-                    addError(errorList,lineno,text[n])
-            if n < len(text) and text[n] == '.':
-                n += 1
-                while n < len(text) and text[n].isdigit():
-                    n += 1
-                yield Token('FLOAT', text[start:n], lineno, start)
-            else:
-                yield Token('INTEGER', text[start:n], lineno, start)
-            continue
-
-        #Float .234 type
-        """
-        if text[n]=='.' and text[n+1].isdigit():
-            start = n
-            n += 1
-            while n < len(text) and text[n].isdigit() and text[n]!='\n':
-                n += 1
-            yield Token('FLOAT', text[start:n], lineno, start)
-        continue
-        """
-
-        n += 1
     print("\n\nErrors:")
     for error in errorList:
         print(error)

@@ -18,5 +18,5 @@ variable
 var
 %
 vector[6]
-[]
-+
+"hola
+mundo"
