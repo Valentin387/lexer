@@ -14,4 +14,10 @@ fun
 _primo_to_bitcoin
 classes
 class
-012
+variable
+var
+%
+vector[6]
+"hola
+mundo"
+2
