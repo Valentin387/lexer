@@ -208,6 +208,8 @@ def tokenize(text: str) -> Token:
         if text[n].isdigit() or text[n]=='.':
             start = n
             contLeftZeros=0
+            if text[n]=='0' and contLeftZeros==0:
+                contLeftZeros=1
 
             if text[n]=='.':
                 n += 1
@@ -217,9 +219,6 @@ def tokenize(text: str) -> Token:
             else:
                 while n < len(text) and text[n].isdigit():
                     n += 1
-                    if text[n]=='0' and contLeftZeros==0:
-                        contLeftZeros=1
-                        n += 1
                     if text[n]=='0' and contLeftZeros!=0:
                         addError(errorList,lineno,text[n])
                 if n < len(text) and text[n] == '.':
@@ -228,7 +227,8 @@ def tokenize(text: str) -> Token:
                         n += 1
                     yield Token('FLOAT', text[start:n], lineno, start)
                 else:
-                    yield Token('INTEGER', text[start:n], lineno, start)
+                    if contLeftZeros==0:
+                        yield Token('INTEGER', text[start:n], lineno, start)
             continue
 
         #errors
