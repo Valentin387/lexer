@@ -195,10 +195,11 @@ def tokenize(text: str) -> Token:
             start = n
             n+=1
 
-            while n+1 < len(text) and text[n]!='"' and text[n+1]!='\n':
+            while n < len(text) and text[n]!='"' and text[n]!='\n':
                 n+=1
             if text[n]=='"':
                 yield Token('STRING', text[start:n+1], lineno, start)
+                n+=1
             else:
                 addError(errorList,lineno,text[start:n+1])
             continue
@@ -235,6 +236,7 @@ def tokenize(text: str) -> Token:
         if not text[n].isalnum() and text[n]!='_' and text[n]!='\n':
             addError(errorList,lineno,text[n])
             n += 1
+            continue
 
     print("\n\nErrors:")
     for error in errorList:
