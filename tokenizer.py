@@ -126,6 +126,7 @@ def addError(list,lineno,problemSrc):
 
 def tokenize(text: str) -> Token:
     lineno, n = 1, 0
+    cantErrors = 0
     errorList=[]
 
     while n < len(text):
@@ -202,6 +203,7 @@ def tokenize(text: str) -> Token:
                 n+=1
             else:
                 addError(errorList,lineno,text[start:n])
+                cantErrors+=1
             continue
 
         # Numeros enteros y de punto flotante
@@ -222,6 +224,7 @@ def tokenize(text: str) -> Token:
                     if text[n]=='0' and contLeftZeros!=0:
                         contLeftZeros += 1
                         addError(errorList,lineno,text[n])
+                        cantErrors+=1
                 if n < len(text) and text[n] == '.':
                     n += 1
                     while n < len(text) and text[n].isdigit():
@@ -235,10 +238,11 @@ def tokenize(text: str) -> Token:
         #errors
         if not text[n].isalnum() and text[n]!='_' and text[n]!='\n':
             addError(errorList,lineno,text[n])
+            cantErrors+=1
             n += 1
             continue
 
-    print("\n\nErrors:")
+    print("\n\nErrors: "+str(cantErrors))
     for error in errorList:
         print(error)
 

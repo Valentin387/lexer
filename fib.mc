@@ -1,26 +1,10 @@
-12
-0.2
-0000
-7
-8
-3.1415
-.234
-13.
-.
-"soyString"
-"soy string"
-function_name
-fun
-_primo_to_bitcoin
-classes
-class
-variable
-99
-var
-%
-vector[6]
+
+for( i=1; i < 4 && i.even(); i+=1){
+
+printf("evento");
+scanf("\d",temp);
+
+?
 "hola
 mundo"
-2
-33
-55.8
+}
