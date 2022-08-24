@@ -201,7 +201,7 @@ def tokenize(text: str) -> Token:
                 yield Token('STRING', text[start:n+1], lineno, start)
                 n+=1
             else:
-                addError(errorList,lineno,text[start:n+1])
+                addError(errorList,lineno,text[start:n])
             continue
 
         # Numeros enteros y de punto flotante
