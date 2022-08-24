@@ -16,3 +16,7 @@ classes
 class
 variable
 var
+%
+vector[6]
+[]
++

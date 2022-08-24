@@ -121,8 +121,8 @@ keywords = {
     'false', 'nil', 'this','super'
 }
 
-def addError(list,lineno):
-    list.append("undefined expression in line: "+str(lineno))
+def addError(list,lineno,problemSrc):
+    list.append("undefined expression in line: "+str(lineno)+" expression: "+problemSrc)
 
 def tokenize(text: str) -> Token:
     lineno, n = 1, 0
@@ -165,7 +165,7 @@ def tokenize(text: str) -> Token:
             continue
 
         # Tokens de longitud 1
-        if text[n] in literal_tokens and not(text[n+1].isdigit()):
+        if text[n] in literal_tokens and not (text[n]=='.' and text[n+1].isdigit()):
             yield Token(literal_tokens[text[n]], text[n], lineno, n)
             n += 1
             continue
@@ -188,8 +188,6 @@ def tokenize(text: str) -> Token:
                     yield Token('KEYWORD', text[start:n], lineno, start)
                 else:
                     yield Token('IDENT', text[start:n], lineno, start)
-                if not text[n].isalnum() and text[n]!='_' and text[n]!='\n':
-                    addError(errorList,lineno)
             continue
 
         #Strings
@@ -203,6 +201,10 @@ def tokenize(text: str) -> Token:
             n+=1
             continue
 
+        if not text[n].isalnum() and text[n]!='_' and text[n]!='\n':
+            addError(errorList,lineno,text[n])
+            n += 1
+
         # Numeros enteros y de punto flotante
         if text[n].isdigit():
             start = n
@@ -214,7 +216,7 @@ def tokenize(text: str) -> Token:
                     contLeftZeros=1
                     n += 1
                 if text[n]=='0' and contLeftZeros!=0:
-                    addError(errorList,lineno)
+                    addError(errorList,lineno,text[n])
                     n += 1
                 continue
             if n < len(text) and text[n] == '.':
