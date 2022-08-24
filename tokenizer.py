@@ -122,14 +122,13 @@ keywords = {
 }
 
 def addError(list,lineno):
-    list.append("invalid syntax in line: "+str(lineno))
+    list.append("not defined expression in line: "+str(lineno))
 
 def tokenize(text: str) -> Token:
     lineno, n = 1, 0
-    oneError=False
     errorList=[]
 
-    while n < len(text) and not oneError:
+    while n < len(text):
 
         # newline
         if text[n] == '\n':
@@ -213,7 +212,8 @@ def tokenize(text: str) -> Token:
                     contLeftZeros=1
                 if text[n]=='0' and contLeftZeros!=0:
                     addError(errorList,lineno)
-                    oneError=True
+                    lineno+=1
+                    break
             if n < len(text) and text[n] == '.':
                 n += 1
                 while n < len(text) and text[n].isdigit():
@@ -234,7 +234,8 @@ def tokenize(text: str) -> Token:
 
         n += 1
     print("\n\nErrors:")
-    print(errorList)
+    for error in errorList:
+        print(error)
 
 if __name__ == '__main__':
     import sys

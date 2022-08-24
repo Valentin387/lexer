@@ -1,6 +1,6 @@
 12
 0.2
-0
+000
 7
 8
 3.1415
@@ -14,7 +14,4 @@ fun
 _primo_to_bitcoin
 classes
 class
-%
-¿
-a
-'a'
+012
