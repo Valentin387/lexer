@@ -121,11 +121,15 @@ keywords = {
     'false', 'nil', 'this','super'
 }
 
-def addError(list,lineno,problemSrc):
-    list.append("undefined expression in line: "+str(lineno)+" expression: "+problemSrc)
+def addError(list,lineno,problemSrc,feature=0):
+    if feature == 1:
+        list.append("open comment from line: "+str(lineno)+" expression: "+problemSrc)
+    else:
+        list.append("undefined expression in line: "+str(lineno)+" expression: "+problemSrc)
 
 def tokenize(text: str) -> Token:
     lineno, n = 1, 0
+    cantErrors = 0
     errorList=[]
 
     while n < len(text):
@@ -145,10 +149,18 @@ def tokenize(text: str) -> Token:
 
         # Comentarios de bloque
         if text[n:n+2] == '/*':
+            start01 = lineno
+            start02 = n
+            end_found=False
             while n < len(text) and text[n:n+2] != '*/':
                 if text[n] == '\n':
                     lineno += 1
                 n += 1
+            if text[n:n+2] == '*/':
+                    end_found=True
+            if not end_found:
+                cantErrors+=1
+                addError(errorList,start01,text[start02:start02+2],1)
             n += 2
             continue
 
@@ -181,9 +193,10 @@ def tokenize(text: str) -> Token:
                 yield Token('IDENT', text[start:n], lineno, start)
             else:
                 while n < len(text) and (text[n].isalnum() or text[n]=='_') and text[n]!='\n':
-                    n+=1
+                    #n+=1
                     if text[n]=='_' or text[n].isdigit():
                         identFlag=True
+                    n+=1
                 if not identFlag and text[start:n] in keywords:
                     yield Token('KEYWORD', text[start:n], lineno, start)
                 else:
@@ -195,20 +208,21 @@ def tokenize(text: str) -> Token:
             start = n
             n+=1
 
-            while n+1 < len(text) and text[n]!='"' and text[n+1]!='\n':
+            while n < len(text) and text[n]!='"' and text[n]!='\n':
                 n+=1
             if text[n]=='"':
                 yield Token('STRING', text[start:n+1], lineno, start)
+                n+=1
             else:
-                addError(errorList,lineno,text[start:n+1])
-            n+=1
+                addError(errorList,lineno,text[start:n])
+                cantErrors+=1
             continue
 
         # Numeros enteros y de punto flotante
         if text[n].isdigit() or text[n]=='.':
             start = n
             contLeftZeros=0
-            if text[n]=='0' and contLeftZeros==0:
+            if text[n]=='0':
                 contLeftZeros=1
 
             if text[n]=='.':
@@ -220,23 +234,27 @@ def tokenize(text: str) -> Token:
                 while n < len(text) and text[n].isdigit():
                     n += 1
                     if text[n]=='0' and contLeftZeros!=0:
+                        contLeftZeros += 1
                         addError(errorList,lineno,text[n])
+                        cantErrors+=1
                 if n < len(text) and text[n] == '.':
                     n += 1
                     while n < len(text) and text[n].isdigit():
                         n += 1
                     yield Token('FLOAT', text[start:n], lineno, start)
                 else:
-                    if contLeftZeros==0:
+                    if contLeftZeros==0 or contLeftZeros==1:
                         yield Token('INTEGER', text[start:n], lineno, start)
             continue
 
         #errors
         if not text[n].isalnum() and text[n]!='_' and text[n]!='\n':
             addError(errorList,lineno,text[n])
+            cantErrors+=1
             n += 1
+            continue
 
-    print("\n\nErrors:")
+    print("\n\nErrors: "+str(cantErrors))
     for error in errorList:
         print(error)
 
