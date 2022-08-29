@@ -71,14 +71,17 @@ class Lexer(sly.Lexer):
     tokens = {
         # Palabras reservadas
         FUN, VAR, PRINT, IF, ELSE, WHILE, RETURN, TRUE, FALSE,
+        CLASS, FOR, WHILE, TRUE, NIL, THIS, SUPER,
 
         # Operadores de Relacion (long-2)
-        LT, LE, GT, GE, EQ, NE, AND, OR, NOT,
+        PLUS, MINUS, TIMES, DIVIDE, POINT, SEMI, COMMA, LPAREN,
+        RPAREN, LBRACE, RBRACE, LSQBRA, RSQBRA,  LT, LE, GT, GE,
+        EQ, NE, AND, OR, NOT, ASSIGN,
 
         # Otros tokens
-        IDENT, NUMBER, STRING,
+        IDENT, NUM, REAL, STRING
     }
-    literals = '+-*/=(){};,'
+    literals = '+-*/=(){}[];,'
 
     # Ignoramos espacios en blanco (white-space)
     ignore = ' \t\r'
@@ -98,6 +101,19 @@ class Lexer(sly.Lexer):
         self.lineno += 1
 
     # Definicion de Tokens a traves de regexp
+    PLUS = r'\+'
+    MINUS =r'-'
+    TIMES =r'\*'
+    DIVIDE =r'/'
+    POINT =r'\.'
+    SEMI =r';'
+    COMMA =r','
+    LPAREN =r'\('
+    RPAREN =r'\)'
+    LBRACE =r'{'
+    RBRACE =r'}'
+    LSQBRA =r'\['
+    RSQBRA =r'\]'
     LE  = r'<='
     LT  = r'<'
     GE  = r'>='
@@ -107,6 +123,7 @@ class Lexer(sly.Lexer):
     AND = r'&&'
     OR  = r'\|\|'
     NOT = r'!'
+    ASSIGN=r'='
 
     IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
     IDENT['fun']    = FUN
@@ -118,10 +135,27 @@ class Lexer(sly.Lexer):
     IDENT['return'] = RETURN
     IDENT['true']   = TRUE
     IDENT['false']  = FALSE
+    IDENT['class']  = CLASS
+    IDENT['for']  = FOR
+    IDENT['while']  = WHILE
+    IDENT['true']  = TRUE
+    IDENT['nil']  = NIL
+    IDENT['this']  = THIS
+    IDENT['super']  = SUPER
 
-    @_(r'\d*\.\d+|\d+\.?')
-    def NUMBER(self, t):
+    @_(r'".*"')
+    def STRING(self, t):
+        t.value = str(t.value)
+        return t
+
+    @_(r'(\d+\.\d*)|(\.\d+)')
+    def REAL(self, t):
         t.value = float(t.value)
+        return t
+
+    @_(r'\d+')
+    def NUM(self, t):
+        t.value = int(t.value)
         return t
 
     def error(self, t):
