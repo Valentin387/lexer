@@ -91,11 +91,12 @@ class Lexer(sly.Lexer):
     def ignore_newline(self, t):
         self.lineno += t.value.count('\n')
 
-    # Ignorar Comentarios
-    @_(r'/*(.|\n)*\*/')
+    # Ignorar Comentarios de varias líneas
+    @_(r'/\*(.|\n)*\*/')
     def ignore_comments(self, t):
         self.lineno += t.value.count('\n')
 
+    # Ignorar Comentarios de una sola línea
     @_(r'//.*\n')
     def ignore_cppcomments(self, t):
         self.lineno += 1
@@ -159,7 +160,8 @@ class Lexer(sly.Lexer):
         return t
 
     def error(self, t):
-        print(f"Caracter Ilegal: '{t.value[0]}'")
+        print("Illegal character '%s'" % t.value[0])
+        self.index += 1
 
 
 
